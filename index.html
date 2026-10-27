@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="An interactive lesson about digital privacy, computing ethics, and privacy law.">
+<title>Privacy Detective | Digital Ethics Lab</title>
+
+<style>
+:root {
+  --bg: #0b1020;
+  --panel: #131c31;
+  --panel2: #192641;
+  --text: #edf3ff;
+  --muted: #aab8d1;
+  --accent: #63e6be;
+  --blue: #8eb7ff;
+  --border: #30415f;
+  --good: #8af0b4;
+  --bad: #ffaaa8;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at top right, #1b3153 0, transparent 45%),
+    var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  line-height: 1.65;
+}
+
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand { font-weight: 800; letter-spacing: .3px; }
+
+.brand span { color: var(--accent); }
+
+nav { display: flex; gap: 18px; flex-wrap: wrap; }
+
+a { color: var(--blue); }
+nav a { text-decoration: none; font-size: .92rem; }
+a:hover { text-decoration: underline; }
+
+main { width: min(1050px, 90%); margin: auto; }
+
+.hero { padding: 65px 0 35px; }
+
+.eyebrow {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+h1 {
+  font-size: clamp(2.4rem, 7vw, 4.8rem);
+  line-height: 1.05;
+  letter-spacing: -2px;
+  margin: 14px 0 20px;
+}
+
+h2 { font-size: clamp(1.5rem, 4vw, 2.2rem); }
+h3 { line-height: 1.3; }
+p { color: var(--muted); }
+
+.hero p { max-width: 680px; font-size: 1.1rem; }
+
+.button {
+  display: inline-block;
+  border: 0;
+  border-radius: 9px;
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+  text-decoration: none;
+  background: var(--accent);
+  color: #081720;
+}
+
+.button:hover { filter: brightness(1.08); text-decoration: none; }
+
+.button.secondary {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.panel {
+  background: rgba(19, 28, 49, .96);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: clamp(20px, 4vw, 32px);
+  margin: 22px 0;
+  box-shadow: 0 12px 40px #00000015;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.tag {
+  display: inline-block;
+  color: var(--accent);
+  background: #63e6be15;
+  border: 1px solid #63e6be50;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 750;
+}
+
+.muted { color: var(--muted); }
+.small { font-size: .88rem; }
+
+.question-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.progress-track {
+  height: 8px;
+  background: #293650;
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 14px 0 25px;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width .25s ease;
+}
+
+.answers {
+  display: grid;
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.answer {
+  text-align: left;
+  color: var(--text);
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  padding: 15px 17px;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.answer:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: #213650;
+}
+
+.answer:disabled { cursor: default; opacity: .9; }
+
+.answer.correct {
+  border-color: var(--good);
+  background: #173c34;
+}
+
+.answer.incorrect {
+  border-color: var(--bad);
+  background: #44272f;
+}
+
+.feedback {
+  border-radius: 12px;
+  padding: 18px;
+  background: #0c1528;
+  border: 1px solid var(--border);
+  margin: 18px 0;
+}
+
+.feedback h3 { margin-top: 0; }
+.feedback p { margin-bottom: 0; }
+[hidden] { display: none !important; }
+
+.pill {
+  display: inline-block;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  padding: 3px 9px;
+  border-radius: 7px;
+  font-size: .82rem;
+}
+
+.source { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.source:last-child { border-bottom: 0; }
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  background: #0b1426;
+  font: inherit;
+}
+
+label { font-weight: 650; }
+
+footer {
+  border-top: 1px solid var(--border);
+  margin-top: 55px;
+  padding: 30px 5%;
+  text-align: center;
+  color: var(--muted);
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 650px) {
+  .grid { grid-template-columns: 1fr; }
+  header { align-items: flex-start; }
+  nav { gap: 12px; }
+  h1 { letter-spacing: -1px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">◈ PRIVACY <span>DETECTIVE</span></div>
+  <nav aria-label="Main navigation">
+    <a href="#mission">Mission</a>
+    <a href="#learn">Learn</a>
+    <a href="#challenge">Challenge</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" id="mission">
+    <div class="eyebrow">Digital Ethics Lab / Case File 001</div>
+    <h1>Who owns<br>your data?</h1>
+    <p>
+      Every app leaves clues. Investigate how personal information is
+      collected, decide what responsible developers should do, and test
+      your knowledge of privacy ethics and the law.
+    </p>
+    <a class="button" href="#challenge">Start the investigation →</a>
+    <p class="small">5 cases · Instant feedback · Score out of 5</p>
+  </section>
+
+  <section class="grid" aria-label="Learning objectives">
+    <article class="panel">
+      <span class="tag">Standard 5.3.4</span>
+      <h3>Think ethically</h3>
+      <p>
+        Evaluate fairness, transparency, consent, and whether a technology
+        collects more personal information than it needs.
+      </p>
+    </article>
+    <article class="panel">
+      <span class="tag">Standard 5.3.5</span>
+      <h3>Understand the law</h3>
+      <p>
+        Apply an actual privacy law and distinguish a possible legal
+        violation from an action that is simply questionable.
+      </p>
+    </article>
+  </section>
+
+  <section id="learn" class="panel">
+    <div class="eyebrow">Field notes / 01</div>
+    <h2>Ethics is not the same as law</h2>
+
+    <div class="grid">
+      <div>
+        <h3>Ethics: What should we do?</h3>
+        <p>
+          Ethics concerns what is responsible, fair, honest, and respectful.
+          For example, a flashlight app requesting your precise location
+          raises an ethical concern because location access seems unrelated
+          to its main purpose.
+        </p>
+        <span class="pill">Values and responsibility</span>
+      </div>
+      <div>
+        <h3>Law: What are we required to do?</h3>
+        <p>
+          Laws are enforceable rules. Whether an action is illegal depends
+          on the specific law, the facts, and whether that law applies.
+          An action can be unethical without necessarily being illegal.
+        </p>
+        <span class="pill">Legal duties and rights</span>
+      </div>
+    </div>
+
+    <h3>Case study: A navigation app</h3>
+    <p>
+      Imagine a navigation app that needs your location to provide directions.
+      It also wants to keep your location history for advertising. Collecting
+      location data for directions can be useful; using it for another purpose
+      raises questions about transparency, meaningful consent, and necessity.
+    </p>
+    <p>
+      <strong>Think like a developer:</strong> explain what data is collected,
+      why it is needed, who receives it, and how a user can control it.
+      Do not assume every questionable practice is automatically illegal.
+    </p>
+
+    <h3>Know the law: California's CCPA</h3>
+    <p>
+      The California Consumer Privacy Act (CCPA), as amended by the
+      California Privacy Rights Act, gives eligible California consumers
+      rights involving personal information. These include rights to know
+      about collection and use, request deletion subject to exceptions,
+      correct inaccurate information, and opt out of certain sales or sharing.
+    </p>
+    <p>
+      The law applies to qualifying businesses and situations, not every app
+      automatically. The facts and legal requirements matter. This is a
+      California law; other jurisdictions may have different rules.
+    </p>
+    <p>
+      <a href="https://oag.ca.gov/privacy/ccpa"
+         target="_blank" rel="noopener noreferrer">
+        Read the California Attorney General's official CCPA guide ↗
+      </a>
+    </p>
+  </section>
+
+  <section id="challenge" class="panel">
+    <div class="eyebrow">Field test / 02</div>
+    <h2>The Privacy Challenge</h2>
+    <p>
+      Read each case carefully. Choose the strongest answer, then study
+      the explanation before moving to the next case.
+    </p>
+
+    <div class="question-meta">
+      <span id="question-count" aria-live="polite">Case 1 of 5</span>
+      <span id="score-display">Score: 0 / 5</span>
+    </div>
+    <div
+      class="progress-track"
+      role="progressbar"
+      aria-label="Challenge progress"
+      aria-valuemin="0"
+      aria-valuemax="5"
+      aria-valuenow="0"
+      id="progress"
+    >
+      <div id="progress-bar"></div>
+    </div>
+
+    <div id="question-area">
+      <span class="tag" id="topic-tag">Ethical reasoning</span>
+      <h3 id="question-text">Loading case...</h3>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback" id="feedback" role="status" hidden>
+        <h3 id="feedback-title"></h3>
+        <p id="feedback-text"></p>
+      </div>
+
+      <button class="button" id="next-button" hidden>
+        Next case →
+      </button>
+    </div>
+
+    <div id="results" hidden aria-live="polite">
+      <h3>Investigation complete.</h3>
+      <p id="final-score"></p>
+      <p id="final-message"></p>
+      <button class="button" id="restart-button">Play again</button>
+    </div>
+  </section>
+
+  <section id="sources" class="panel">
+    <div class="eyebrow">Evidence locker / 03</div>
+    <h2>Sources and further reading</h2>
+    <p>
+      Use credible sources to check the evidence. The first source is an
+      official legal resource; the others provide guidance on privacy
+      practices and responsible software development.
+    </p>
+
+    <div class="source">
+      <h3>1. California Department of Justice</h3>
+      <p>
+        Official guidance about the CCPA, consumer rights, and business
+        responsibilities. Jurisdiction: California, United States.
+      </p>
+      <a href="https://oag.ca.gov/privacy/ccpa"
+         target="_blank" rel="noopener noreferrer">
+        California Consumer Privacy Act (CCPA) ↗
+      </a>
+    </div>
+
+    <div class="source">
+      <h3>2. Federal Trade Commission (FTC)</h3>
+      <p>
+        Explains how websites and apps track users and how privacy settings
+        can help limit the collection of personal information.
+        Jurisdiction: United States; federal consumer-protection agency.
+      </p>
+      <a href="https://consumer.ftc.gov/articles/how-websites-and-apps-collect-and-use-your-information"
+         target="_blank" rel="noopener noreferrer">
+        How Websites and Apps Collect and Use Your Information ↗
+      </a>
+    </div>
+
+    <div class="source">
+      <h3>3. Federal Trade Commission (FTC)</h3>
+      <p>
+        Practical advice for developers, including collecting only the
+        information they need and avoiding unnecessary data retention.
+      </p>
+      <a href="https://www.ftc.gov/business-guidance/resources/app-developers-start-security"
+         target="_blank" rel="noopener noreferrer">
+        App Developers: Start with Security ↗
+      </a>
+    </div>
+  </section>
+
+  <section class="panel" id="testing">
+    <div class="eyebrow">Quality assurance / 04</div>
+    <h2>Peer testing and improvement</h2>
+    <p>
+      Ask a classmate to use the published website without coaching them.
+      Record what actually happened. Do not claim that testing occurred
+      until you have completed it.
+    </p>
+
+    <form id="testing-form">
+      <label for="tester">Classmate's first name or initials</label>
+      <input id="tester" name="tester" required
+             placeholder="Enter after the test">
+
+      <label for="feedback-note">What feedback did they give?</label>
+      <textarea id="feedback-note" name="feedback-note" rows="3"
+                required placeholder="Record their actual feedback"></textarea>
+
+      <label for="improvement">What one improvement did you make?</label>
+      <textarea id="improvement" name="improvement" rows="3"
+                required placeholder="Describe the change you actually made"></textarea>
+
+      <button class="button" type="submit">Prepare testing record</button>
+    </form>
+    <div id="test-record" class="feedback" hidden aria-live="polite">
+      <h3>Testing record</h3>
+      <p id="record-content"></p>
+      <button class="button secondary" id="copy-record" type="button">
+        Copy record
+      </button>
+      <p class="small">
+        This record is only prepared in your browser. Save it in your project
+        or assignment after checking that it accurately reflects your test.
+      </p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="eyebrow">Developer reflection / 05</div>
+    <h2>Explain your work</h2>
+    <p>Be prepared to answer these in your own words for your teacher.</p>
+    <ol>
+      <li>
+        How does the website teach the difference between ethical concerns
+        and legal obligations?
+      </li>
+      <li>
+        What does the JavaScript do when a visitor selects an answer?
+      </li>
+      <li>
+        What did your classmate's feedback reveal, and what did you change
+        as a result?
+      </li>
+    </ol>
+    <p class="small">
+      Your score and these prompts are learning tools. Your reflection
+      should describe your own understanding and actual development work.
+    </p>
+  </section>
+</main>
+
+<footer>
+  Privacy Detective · Digital Ethics Lab<br>
+  <span class="small">
+    Educational project about computing ethics, privacy, and law.
+    Legal information is introductory, not legal advice.
+  </span>
+</footer>
+
+<script>
+"use strict";
+
+const cases = [
+  {
+    topic: "Ethical reasoning",
+    question: "A flashlight app requests access to your precise GPS location. What is the strongest ethical concern?",
+    answers: [
+      "GPS always makes a phone run out of storage.",
+      "The location permission seems unrelated to the flashlight's purpose.",
+      "Every app that requests permission is breaking the law.",
+      "Location data can never be collected responsibly."
+    ],
+    correct: 1,
+    explanation: "Correct. A flashlight normally does not need location data. Responsible developers should minimize collection and explain why they need information. An unnecessary permission is a warning sign, but it does not by itself prove a legal violation."
+  },
+  {
+    topic: "Privacy protection",
+    question: "A navigation app wants location access even when you are not using directions. What is a sensible first step?",
+    answers: [
+      "Allow every permission so the app works faster.",
+      "Share your account password with the developer.",
+      "Review the app's purpose and privacy settings, then limit access if appropriate.",
+      "Assume deleting the app always erases every copy of your data."
+    ],
+    correct: 2,
+    explanation: "Correct. Check why access is requested and whether the app offers a less intrusive setting. Limiting permissions can reduce collection. Deleting an app does not necessarily delete data already held by a company."
+  },
+  {
+    topic: "Law and jurisdiction",
+    question: "A qualifying business covered by California's CCPA receives a valid request to delete a consumer's personal information. Which statement is most accurate?",
+    answers: [
+      "The business may have to honor the request, subject to legal exceptions.",
+      "Every business in the world must delete all data immediately.",
+      "The CCPA only applies to government websites.",
+      "The consumer has no privacy rights under California law."
+    ],
+    correct: 0,
+    explanation: "Correct. The CCPA gives eligible consumers a right to request deletion, but exceptions exist and the law does not apply to every business. Always check the official law guidance and the facts."
+  },
+  {
+    topic: "Ethics versus law",
+    question: "An app clearly explains that it collects extra information for an optional feature. Some users still think the feature is invasive. What should a developer understand?",
+    answers: [
+      "Clear disclosure automatically makes every practice ethical and legal.",
+      "If one user objects, the practice must be criminal.",
+      "Ethical concerns and legal compliance are different questions; both need evaluation.",
+      "Developers never need to consider user opinions."
+    ],
+    correct: 2,
+    explanation: "Correct. Transparency helps, but it does not settle every ethical concern or establish legal compliance. Developers should consider necessity, fairness, user choice, security, and applicable law."
+  },
+  {
+    topic: "Responsible development",
+    question: "A shopping app collects location data for nearby stores and keeps it indefinitely, even after it is no longer needed. What is the best design improvement?",
+    answers: [
+      "Collect even more data just in case.",
+      "Keep the data forever but hide the privacy notice.",
+      "Share the data with anyone who asks.",
+      "Limit collection to what is needed and establish an appropriate retention period."
+    ],
+    correct: 3,
+    explanation: "Correct. Data minimization and sensible retention reduce privacy and security risks. The FTC recommends that developers avoid collecting or keeping information they do not need. The correct retention period depends on the purpose and applicable obligations."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+const questionCount = document.getElementById("question-count");
+const scoreDisplay = document.getElementById("score-display");
+const progress = document.getElementById("progress");
+const progressBar = document.getElementById("progress-bar");
+const topicTag = document.getElementById("topic-tag");
+const questionText = document.getElementById("question-text");
+const answersArea = document.getElementById("answers");
+const feedback = document.getElementById("feedback");
+const feedbackTitle = document.getElementById("feedback-title");
+const feedbackText = document.getElementById("feedback-text");
+const nextButton = document.getElementById("next-button");
+const questionArea = document.getElementById("question-area");
+const results = document.getElementById("results");
+
+function renderCase() {
+  answered = false;
+  const item = cases[current];
+
+  questionCount.textContent = `Case ${current + 1} of ${cases.length}`;
+  scoreDisplay.textContent = `Score: ${score} / ${cases.length}`;
+  progress.setAttribute("aria-valuenow", current);
+  progressBar.style.width = `${(current / cases.length) * 100}%`;
+  topicTag.textContent = item.topic;
+  questionText.textContent = item.question;
+
+  answersArea.replaceChildren();
+  feedback.hidden = true;
+  nextButton.hidden = true;
+
+  item.answers.forEach((answer, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "answer";
+    button.textContent = `${String.fromCharCode(65 + index)}. ${answer}`;
+    button.addEventListener("click", () => chooseAnswer(index));
+    answersArea.appendChild(button);
+  });
+}
+
+function chooseAnswer(selected) {
+  if (answered) return;
+  answered = true;
+
+  const item = cases[current];
+  const buttons = [...answersArea.querySelectorAll("button")];
+  const correct = selected === item.correct;
+
+  if (correct) score++;
+
+  buttons.forEach((button, index) => {
+    button.disabled = true;
+    if (index === item.correct) button.classList.add("correct");
+    if (index === selected && !correct) button.classList.add("incorrect");
+  });
+
+  scoreDisplay.textContent = `Score: ${score} / ${cases.length}`;
+  feedbackTitle.textContent = correct
+    ? "Correct — good investigation."
+    : "Not quite. Review the evidence.";
+  feedbackText.textContent = item.explanation;
+  feedback.hidden = false;
+  nextButton.hidden = false;
+  nextButton.textContent =
+    current === cases.length - 1 ? "View results →" : "Next case →";
+
+  // The challenge score increases only once per question.
+}
+
+function showResults() {
+  questionArea.hidden = true;
+  results.hidden = false;
+  progress.setAttribute("aria-valuenow", cases.length);
+  progressBar.style.width = "100%";
+  questionCount.textContent = "Investigation complete";
+  scoreDisplay.textContent = `Score: ${score} / ${cases.length}`;
+
+  document.getElementById("final-score").textContent =
+    `You scored ${score} out of ${cases.length}.`;
+
+  let message;
+  if (score === 5) {
+    message = "Excellent work. You applied the key privacy concepts across all five cases.";
+  } else if (score >= 3) {
+    message = "Good progress. Review the explanations for the cases you missed, then try again.";
+  } else {
+    message = "Keep investigating. Review the lesson on ethics and law, then replay the challenge.";
+  }
+
+  document.getElementById("final-message").textContent = message;
+}
+
+nextButton.addEventListener("click", () => {
+  if (!answered) return;
+  current++;
+  if (current >= cases.length) {
+    showResults();
+  } else {
+    renderCase();
+  }
+});
+
+document.getElementById("restart-button").addEventListener("click", () => {
+  current = 0;
+  score = 0;
+  questionArea.hidden = false;
+  results.hidden = true;
+  renderCase();
+  document.getElementById("challenge").scrollIntoView();
+});
+
+document.getElementById("testing-form").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const tester = document.getElementById("tester").value.trim();
+  const notes = document.getElementById("feedback-note").value.trim();
+  const change = document.getElementById("improvement").value.trim();
+
+  const record = [
+    `Classmate: ${tester}`,
+    `Feedback: ${notes}`,
+    `Improvement made: ${change}`
+  ].join("\n");
+
+  document.getElementById("record-content").textContent = record;
+  document.getElementById("test-record").hidden = false;
+});
+
+document.getElementById("copy-record").addEventListener("click", async () => {
+  const record = document.getElementById("record-content").textContent;
+  const button = document.getElementById("copy-record");
+
+  try {
+    await navigator.clipboard.writeText(record);
+    button.textContent = "Copied!";
+  } catch {
+    button.textContent = "Select the record text and copy it manually.";
+  }
+});
+
+renderCase();
+</script>
+</body>
+</html>
